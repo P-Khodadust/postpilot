@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PostPilot Admin</title>
+  <script src="https://unpkg.com/htmx.org@2.0.3"></script>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 0; background: #0f1115; color: #e7e9ee; }
+    header { padding: 14px 20px; background: #171a21; display: flex; gap: 20px; align-items: center; }
+    header a { color: #9fb4ff; text-decoration: none; }
+    main { padding: 24px; max-width: 1000px; margin: 0 auto; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(160px,1fr)); gap: 16px; }
+    .card { background: #171a21; border: 1px solid #232734; border-radius: 12px; padding: 18px; }
+    .card .n { font-size: 30px; font-weight: 700; }
+    .card .l { color: #93a0b5; font-size: 13px; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { text-align: left; padding: 10px; border-bottom: 1px solid #232734; }
+    input { padding: 10px; border-radius: 8px; border: 1px solid #2a2f3c; background:#0f1115; color:#e7e9ee; }
+    button { padding: 10px 16px; border-radius: 8px; border: 0; background: #3b5bff; color: #fff; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <header>
+    <strong>🛩 PostPilot</strong>
+    <a href="/admin/">Overview</a>
+    <a href="/admin/accounts">Accounts</a>
+    <a href="/admin/logout" style="margin-left:auto">Log out</a>
+  </header>
+  <main>{% block content %}{% endblock %}</main>
+</body>
+</html>

@@ -1,0 +1,67 @@
+name: postpilot
+
+x-app: &app
+  build:
+    context: .
+    dockerfile: docker/Dockerfile
+  image: postpilot:local
+  env_file: .env
+  depends_on:
+    migrate:
+      condition: service_completed_successfully
+    redis:
+      condition: service_healthy
+
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postpilot
+      POSTGRES_PASSWORD: postpilot
+      POSTGRES_DB: postpilot
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postpilot"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  migrate:
+    <<: *app
+    depends_on:
+      db:
+        condition: service_healthy
+    command: ["migrate"]
+    restart: "no"
+
+  web:
+    <<: *app
+    command: ["web"]
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/healthz').status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  bot:
+    <<: *app
+    command: ["bot"]
+
+  worker:
+    <<: *app
+    command: ["worker"]
+    # scale horizontally: docker compose up --scale worker=3 (exactly-once via DB row leasing)
+
+volumes:
+  pgdata:

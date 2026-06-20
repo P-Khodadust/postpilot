@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>PostPilot Admin - Login</title>
+  <style>
+    body { font-family: system-ui, sans-serif; background:#0f1115; color:#e7e9ee;
+           display:grid; place-items:center; height:100vh; margin:0; }
+    form { background:#171a21; padding:28px; border-radius:14px; width:300px; display:grid; gap:12px; }
+    input { padding:10px; border-radius:8px; border:1px solid #2a2f3c; background:#0f1115; color:#e7e9ee; }
+    button { padding:10px; border:0; border-radius:8px; background:#3b5bff; color:#fff; cursor:pointer; }
+    .err { color:#ff7a7a; font-size:13px; }
+  </style>
+</head>
+<body>
+  <form method="post" action="/admin/login">
+    <h2 style="margin:0">PostPilot Admin</h2>
+    {% if error %}<div class="err">{{ error }}</div>{% endif %}
+    <input name="email" type="email" placeholder="Email" required>
+    <input name="password" type="password" placeholder="Password" required>
+    <button type="submit">Sign in</button>
+  </form>
+</body>
+</html>

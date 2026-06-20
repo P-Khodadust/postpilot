@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  lint-type:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: ruff format --check .
+      - run: mypy src
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -e ".[dev]"
+      # Unit tests (pure logic, no external services) gate every PR.
+      # Integration tests spin up Postgres+Redis via testcontainers (Docker available on the runner).
+      - run: pytest --cov --cov-report=term-missing
+      - name: Migration up/down is reversible
+        run: |
+          docker run -d --name pg -e POSTGRES_PASSWORD=postpilot -e POSTGRES_USER=postpilot -e POSTGRES_DB=postpilot -p 5432:5432 postgres:16-alpine
+          sleep 8
+          export DATABASE_URL=postgresql+asyncpg://postpilot:postpilot@localhost:5432/postpilot
+          alembic upgrade head
+          alembic downgrade base
+
+  build:
+    needs: [lint-type, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build -f docker/Dockerfile -t postpilot:ci .
+      - name: Trivy image scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: postpilot:ci
+          severity: HIGH,CRITICAL
+          exit-code: "0"  # report-only; flip to 1 to gate

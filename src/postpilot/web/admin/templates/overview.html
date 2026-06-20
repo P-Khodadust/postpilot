@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Overview</h1>
+<div class="grid">
+  {% for label, n in kpis.items() %}
+  <div class="card"><div class="n">{{ n }}</div><div class="l">{{ label }}</div></div>
+  {% endfor %}
+</div>
+{% endblock %}
