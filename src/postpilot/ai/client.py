@@ -28,15 +28,18 @@ class Tier(str, enum.Enum):
 
 class AIClient:
     def __init__(self) -> None:
-        self._key = get_settings().anthropic_api_key
+        settings = get_settings()
+        self._key = settings.anthropic_api_key
         self._client = None
-        if self._key:
+        if settings.ai_enabled and self._key:
             try:
                 from anthropic import AsyncAnthropic
 
                 self._client = AsyncAnthropic(api_key=self._key)
             except Exception as e:  # noqa: BLE001
                 log.warning("ai.init_failed", error=str(e))
+        elif not settings.ai_enabled:
+            log.info("ai.disabled")
 
     @property
     def available(self) -> bool:

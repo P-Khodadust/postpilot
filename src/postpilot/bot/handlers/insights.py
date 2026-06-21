@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from postpilot.ai.client import AIClient
 from postpilot.bot.keyboards import back_to_menu
+from postpilot.core.config import get_settings
 from postpilot.core.errors import QuotaError
 from postpilot.entitlements.limits import LimitKey
 from postpilot.entitlements.service import check_quota
@@ -30,18 +31,32 @@ def _home_kb():
     return b.as_markup()
 
 
+_OFF_MSG = "📊 AI insights are turned off for now. They'll be enabled soon."
+
+
 @router.message(Command("insights"))
 async def cmd_insights(message: Message):
+    if not get_settings().ai_enabled:
+        await message.answer(_OFF_MSG, reply_markup=back_to_menu())
+        return
     await message.answer("📊 Insights", reply_markup=_home_kb())
 
 
 @router.callback_query(F.data == "ins:home")
 async def cb_home(cb: CallbackQuery):
+    if not get_settings().ai_enabled:
+        await cb.message.edit_text(_OFF_MSG, reply_markup=back_to_menu())
+        await cb.answer()
+        return
     await cb.message.edit_text("📊 Insights", reply_markup=_home_kb())
     await cb.answer()
 
 
 async def _gate(session: AsyncSession, ctx: TenantContext, cb: CallbackQuery) -> bool:
+    if not get_settings().ai_enabled:
+        await cb.message.edit_text(_OFF_MSG, reply_markup=back_to_menu())
+        await cb.answer()
+        return False
     try:
         await check_quota(session, ctx.account_id, LimitKey.AI_INSIGHT_CALLS_PER_MONTH)
     except QuotaError as e:

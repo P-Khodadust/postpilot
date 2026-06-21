@@ -41,6 +41,7 @@ class Settings(BaseSettings):
     token_enc_keys: str = ""
 
     # AI
+    ai_enabled: bool = True
     anthropic_api_key: str = ""
     ai_monthly_token_budget_default: int = 200_000
 
