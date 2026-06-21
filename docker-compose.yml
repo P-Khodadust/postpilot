@@ -46,8 +46,9 @@ services:
   web:
     <<: *app
     command: ["web"]
+    # Bound to localhost only; public traffic comes through the caddy HTTPS edge.
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8000/healthz').status==200 else 1)"]
       interval: 15s
@@ -63,5 +64,25 @@ services:
     command: ["worker"]
     # scale horizontally: docker compose up --scale worker=3 (exactly-once via DB row leasing)
 
+  # HTTPS edge — only started once DUCKDNS_TOKEN + PP_PUBLIC_HOST are set in .env.
+  # Isolated from the host's existing nginx (publishes only 8443).
+  caddy:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.caddy
+    image: postpilot-caddy:local
+    env_file: .env
+    volumes:
+      - ./docker/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    ports:
+      - "8443:8443"
+    depends_on:
+      - web
+    restart: unless-stopped
+
 volumes:
   pgdata:
+  caddy_data:
+  caddy_config:
