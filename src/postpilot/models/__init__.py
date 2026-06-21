@@ -24,6 +24,7 @@ from sqlalchemy import (
     Text,
     UniqueConstraint,
     func,
+    text,
 )
 from sqlalchemy.dialects.postgresql import ARRAY, INET, JSONB, UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -263,14 +264,14 @@ class Plan(Base):
     __tablename__ = "plans"
     code: Mapped[str] = mapped_column(String(32), primary_key=True)
     display_name: Mapped[str] = mapped_column(Text, nullable=False)
-    price_cents: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    currency: Mapped[str] = mapped_column(String(8), nullable=False, default="usd")
-    interval: Mapped[str] = mapped_column(String(8), nullable=False, default="month")
+    price_cents: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
+    currency: Mapped[str] = mapped_column(String(8), nullable=False, server_default="usd")
+    interval: Mapped[str] = mapped_column(String(8), nullable=False, server_default="month")
     stripe_price_id: Mapped[str | None] = mapped_column(Text)
     telegram_stars: Mapped[int | None] = mapped_column(Integer)
-    trial_days: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
-    is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
-    sort: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
+    trial_days: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
+    is_public: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=text("true"))
+    sort: Mapped[int] = mapped_column(Integer, nullable=False, server_default=text("0"))
 
 
 class PlanLimit(Base):
