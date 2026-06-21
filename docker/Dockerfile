@@ -19,7 +19,8 @@ COPY --from=builder /app/src /app/src
 COPY alembic.ini ./
 COPY alembic ./alembic
 COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh && chown -R app:app /app
+# Normalize line endings (defends against CRLF from Windows checkouts) then make executable.
+RUN sed -i 's/\r$//' /usr/local/bin/entrypoint.sh && chmod +x /usr/local/bin/entrypoint.sh && chown -R app:app /app
 USER app
 ENTRYPOINT ["entrypoint.sh"]
 CMD ["web"]
