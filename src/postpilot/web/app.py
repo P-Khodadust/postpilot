@@ -21,13 +21,22 @@ async def lifespan(app: FastAPI):
     configure_logging(settings.log_level)
     settings.require_for_production()
     # Build a shared bot + dispatcher for webhook dispatch + proactive pushes.
-    from postpilot.bot.main import build_bot, build_dispatcher
+    # Tolerate a missing/placeholder token (staging/infra-only deploys): the API,
+    # OAuth callback, and admin still run; only Telegram dispatch is disabled.
+    app.state.bot = None
+    app.state.dp = None
+    token = settings.telegram_bot_token
+    if token and ":" in token and "REPLACE" not in token.upper():
+        from postpilot.bot.main import build_bot, build_dispatcher
 
-    app.state.bot = build_bot()
-    app.state.dp = build_dispatcher()
-    log.info("web.startup", env=settings.environment)
+        app.state.bot = build_bot()
+        app.state.dp = build_dispatcher()
+    else:
+        log.warning("web.bot_disabled", reason="no valid TELEGRAM_BOT_TOKEN")
+    log.info("web.startup", env=settings.environment, bot_enabled=app.state.bot is not None)
     yield
-    await app.state.bot.session.close()
+    if app.state.bot is not None:
+        await app.state.bot.session.close()
 
 
 def create_app() -> FastAPI:

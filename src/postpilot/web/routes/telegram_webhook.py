@@ -18,6 +18,8 @@ async def telegram_webhook(
     settings = get_settings()
     if x_telegram_bot_api_secret_token != settings.telegram_webhook_secret:
         raise HTTPException(status_code=403, detail="bad secret token")
+    if request.app.state.bot is None or request.app.state.dp is None:
+        raise HTTPException(status_code=503, detail="bot not configured")
     data = await request.json()
     update = Update.model_validate(data, context={"bot": request.app.state.bot})
     await request.app.state.dp.feed_update(request.app.state.bot, update)
