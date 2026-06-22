@@ -1,10 +1,14 @@
-"""Test config. Sets a stable token-encryption key so crypto round-trips are deterministic."""
+"""Test config. Generates an ephemeral token-encryption key at runtime so crypto
+round-trips work in tests without committing any key material to the repo.
+"""
 
 from __future__ import annotations
 
 import os
 
-os.environ.setdefault(
-    "TOKEN_ENC_KEYS", "V6k4suSthR42J6nIJoFepp8kIp_GMjEpdkLCYLSNzME="  # dev-only Fernet key
-)
 os.environ.setdefault("TENANCY_STRICT", "1")
+
+if not os.environ.get("TOKEN_ENC_KEYS"):
+    from cryptography.fernet import Fernet
+
+    os.environ["TOKEN_ENC_KEYS"] = Fernet.generate_key().decode()
