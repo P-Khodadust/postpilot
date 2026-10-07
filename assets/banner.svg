@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="380" viewBox="0 0 880 380" role="img" aria-label="PostPilot: your X account on autopilot, from a Telegram chat">
+<foreignObject x="0" y="0" width="880" height="380">
+<div xmlns="http://www.w3.org/1999/xhtml" class="root">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+.root { width: 880px; height: 380px; border-radius: 14px; overflow: hidden; background: #0d1117;
+        border: 1px solid #30363d; color: #e6edf3; font: 15px/1.5 Inter, 'Segoe UI', -apple-system, BlinkMacSystemFont, Helvetica, Arial, sans-serif; }
+
+.wrap { display: flex; height: 100%; }
+.left { width: 410px; padding: 40px 0 0 36px;
+         background: radial-gradient(circle at 20% 90%, rgba(56,189,248,.18), transparent 60%); }
+.logo { display: flex; align-items: center; gap: 12px; }
+.plane { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg, #38bdf8, #2563eb);
+          display: flex; align-items: center; justify-content: center; }
+.plane::after { content: ""; width: 20px; height: 20px; background: #fff;
+                clip-path: polygon(0 45%, 100% 0, 62% 100%, 48% 60%); }
+h1 { font-size: 40px; font-weight: 800; letter-spacing: -1.2px; }
+.tag { font-size: 20px; font-weight: 700; line-height: 1.3; margin: 18px 0 10px; }
+.sub { color: #8b949e; font-size: 14.5px; line-height: 1.5; }
+.pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 18px; font: 600 12px 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, 'Liberation Mono', monospace; }
+.pills span { padding: 4px 9px; border-radius: 6px; background: #161b22; border: 1px solid #30363d; color: #7dd3fc; }
+.chat { flex: 1; margin: 18px 20px 18px 8px; background: #0e1621; border-radius: 12px; border: 1px solid #1f2c3a;
+         padding: 14px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; font-size: 13.5px; }
+.top { display: flex; align-items: center; gap: 10px; padding-bottom: 8px; border-bottom: 1px solid #1f2c3a; }
+.av { width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, #38bdf8, #2563eb); }
+.top b { font-size: 14px; } .top small { display: block; color: #6c7883; font-size: 12px; }
+.msg { max-width: 86%; padding: 8px 11px; border-radius: 12px; line-height: 1.45; white-space: pre-line; }
+.bot { background: #182533; align-self: flex-start; border-bottom-left-radius: 4px; }
+.me { background: #2b5278; align-self: flex-end; border-bottom-right-radius: 4px; }
+.btns { display: flex; gap: 6px; align-self: flex-start; width: 86%; }
+.btns span { flex: 1; text-align: center; padding: 6px; border-radius: 8px; background: #1e3247; color: #e6edf3; font-size: 12.5px; }
+
+</style>
+<div class="wrap">
+<div class="left">
+  <div class="logo"><div class="plane"></div><h1>PostPilot</h1></div>
+  <div class="tag">Your X account, on autopilot.<br/>From the one app you never close.</div>
+  <div class="sub">A Telegram bot that posts to X for you, on schedule, through the official API.</div>
+  <div class="pills"><span>OAuth 2.0 + PKCE</span><span>exactly-once</span><span>multi-tenant</span><span>Docker</span></div>
+</div>
+<div class="chat">
+  <div class="top"><div class="av"></div><div><b>PostPilot</b><small>bot</small></div></div>
+  <div class="msg me">/start</div>
+  <div class="msg bot">👋 Welcome to PostPilot
+I keep your X account active automatically: post "We're open!", "Closed for the day", and anything else you want, on a schedule.
+Takes about 2 minutes. Ready?</div>
+  <div class="btns"><span>✨ Let's set it up</span><span>❓ How it works</span></div>
+  <div class="msg bot">✅ Connected to @yourcafe
+Nice - your X account is linked.</div>
+</div>
+</div>
+</div>
+</foreignObject>
+</svg>

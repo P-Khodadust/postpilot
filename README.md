@@ -1,12 +1,8 @@
 <div align="center">
 
-```
-            ╔═══════════════════════════════════╗
-            ║   ✈   P O S T   P I L O T         ║
-            ╚═══════════════════════════════════╝
-```
+<img src="assets/banner.svg" alt="PostPilot: your X account on autopilot, from a Telegram chat" width="100%">
 
-# Your X account, on autopilot — from the one app you never close.
+<br/>
 
 **PostPilot** is a Telegram-native SaaS that posts to X (Twitter) *for* you.
 Connect once, tell it your hours, and it keeps your feed alive — recurring announcements,
@@ -109,20 +105,22 @@ idempotency and rate-limits are uniform, and adding more workers can never cause
 
 One Docker image, four roles, sharing **PostgreSQL** + **Redis**:
 
-```
-  Telegram ─webhook─►┌──────────────────────────────┐
-  X OAuth  ─────────►│  web · FastAPI               │  /oauth/x/callback
-  Stripe   ─────────►│  callbacks · webhooks · admin│  /telegram/webhook · /admin
-                     └───────────────┬──────────────┘
-       bot · aiogram ────────────────┤
-       onboarding · menus · FSM       ▼
-                            PostgreSQL 16  ◄──►  Redis 7
-       worker ×N ─ SKIP LOCKED lease ─┘          FSM · locks · rate-limit
-       send · materialize · refresh
-                     migrate · Alembic (one-shot, gates the rest)
+```mermaid
+flowchart LR
+    TG([Telegram]) -- "/telegram/webhook" --> WEB
+    XO([X OAuth]) -- "/oauth/x/callback" --> WEB
+    ST([Stripe]) -- webhook --> WEB
+    WEB["🌐 web · FastAPI<br/>callbacks · webhooks<br/>/admin"] --> PG
+    BOT["🤖 bot · aiogram<br/>onboarding · menus · FSM"] --> PG
+    BOT --> RD
+    WRK["⚙️ worker ×N<br/>SKIP LOCKED lease<br/>send · materialize · refresh"] --> PG
+    WRK --> RD
+    WRK -- post --> XA([X API])
+    PG[("PostgreSQL 16")]
+    RD[("Redis 7<br/>FSM · locks · rate-limit")]
 ```
 
-<sub>Exactly-once delivery comes from the **database**, not the process — so `--scale worker=N` stays correct.</sub>
+<sub>A one-shot `migrate` role (Alembic) runs first and gates the rest. Exactly-once delivery comes from the **database**, not the process — so `--scale worker=N` stays correct.</sub>
 
 ---
 
